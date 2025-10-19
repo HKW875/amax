@@ -1,283 +1,277 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Real Estate — 50 Sample Listings</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Global Real Estate Listings</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
-    :root{ --card-gap:20px; --panel-width:95%; --bg:#f5f7fb; --primary:#0b63c6; }
-    *{box-sizing:border-box}
-    body{ margin:0; font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial; background:var(--bg); display:flex; flex-direction:column; align-items:center; }
-    h1{ margin:14px 0 6px; color:#0f1724; font-weight:600; }
-    #map{ width: var(--panel-width); height: 420px; border-radius:10px; border:1px solid #d8e0ef; box-shadow:0 6px 20px rgba(14,30,70,0.06); }
-    .controls{ width:var(--panel-width); margin-top:12px; background:#fff; padding:14px; border-radius:10px; box-shadow:0 6px 20px rgba(14,30,70,0.04); display:flex; flex-direction:column; gap:10px; }
-    .row{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
-    select, button{ padding:8px 10px; border-radius:8px; border:1px solid #d0d7e6; background:#fff; font-size:14px; }
-    button { cursor:pointer; background:var(--primary); color:#fff; border:none; }
-    .checkboxes{ display:flex; gap:10px; flex-wrap:wrap; margin-top:6px; }
-    .checkboxes label{ display:flex; gap:6px; align-items:center; font-size:13px; color:#1f2937; }
-    .grid{ width:var(--panel-width); margin:18px 0 60px; display:grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap:var(--card-gap); }
-    .card{ background:#fff; border-radius:10px; overflow:hidden; box-shadow:0 6px 18px rgba(14,30,70,0.06); cursor:pointer; display:flex; flex-direction:column; }
-    .card img{ width:100%; height:180px; object-fit:cover; display:block; }
-    .card .body{ padding:12px 14px; display:flex; flex-direction:column; gap:8px; }
-    .title{ font-weight:700; color:#0b1220; display:flex; align-items:center; gap:8px; }
-    .meta{ color:#334155; font-size:13px; }
-    .price{ color:var(--primary); font-weight:700; font-size:15px; }
-    .amenities{ font-size:12px; color:#0b1b2b; display:flex; gap:6px; flex-wrap:wrap; }
-    .amenities span{ background:#eef6ff; color:#034ea2; padding:4px 8px; border-radius:999px; font-size:12px; }
-    .contact{ font-weight:600; color:#0b3a70; }
-    iframe{ width:100%; height:200px; border:none; margin-top:8px; }
-    @media (max-width:720px){ #map{height:320px} .grid{ grid-template-columns: repeat(1, 1fr);} }
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(180deg, #e8f1ff, #ffffff);
+    }
+    #map {
+      height: 50vh;
+      width: 100%;
+      z-index: 1;
+    }
+    .controls {
+      text-align: center;
+      background: #ffffffee;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      margin: 15px auto;
+      border-radius: 14px;
+      width: 90%;
+      color: #003366;
+    }
+    .controls h3 {
+      margin-top: 0;
+      color: #0056b3;
+      font-size: 1.6em;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+    .filter-group {
+      display: inline-block;
+      text-align: left;
+      margin: 10px 25px;
+      vertical-align: top;
+      border-left: 3px solid #007bff;
+      padding-left: 12px;
+    }
+    .filter-group label {
+      display: block;
+      margin: 3px 0;
+      color: #004085;
+    }
+    select, button {
+      padding: 6px 10px;
+      border: 1px solid #007bff;
+      border-radius: 6px;
+      font-size: 14px;
+      color: #0056b3;
+      background: #f0f8ff;
+      transition: 0.2s;
+    }
+    select:hover, button:hover {
+      background: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+    button {
+      font-weight: bold;
+      margin-top: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    .property-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 18px;
+      padding: 20px;
+      width: 90%;
+      margin: auto;
+    }
+    .property-card {
+      background: #ffffff;
+      border: 2px solid #e3f2fd;
+      border-radius: 12px;
+      box-shadow: 0 3px 7px rgba(0,0,0,0.1);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .property-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(0,123,255,0.3);
+    }
+    .property-card img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      border-bottom: 2px solid #007bff;
+    }
+    .property-details {
+      padding: 12px;
+      color: #002855;
+    }
+    .property-details b {
+      color: #004aad;
+    }
+    .verified {
+      color: #007bff;
+      font-size: 16px;
+      margin-left: 5px;
+    }
+    iframe {
+      width: 100%;
+      height: 180px;
+      border: none;
+      margin-top: 8px;
+      border-radius: 8px;
+    }
   </style>
 </head>
 <body>
-  <h1>International Real Estate Listings 🌍</h1>
 
-  <div id="map" aria-hidden="false"></div>
+  <div id="map"></div>
 
-  <div class="controls" role="region" aria-label="filters">
-    <div class="row">
-      <select id="countryFilter" onchange="filterAndRender()">
+  <div class="controls">
+    <h3>Explore Beautiful Properties Worldwide</h3>
+    <div class="filter-group">
+      <label><b>Country:</b></label>
+      <select id="countrySelect">
         <option value="all">All Countries</option>
-        <option value="Kenya">Kenya (KES)</option>
-        <option value="USA">USA (USD)</option>
-        <option value="India">India (INR)</option>
-        <option value="UK">UK (GBP)</option>
-        <option value="South Africa">South Africa (ZAR)</option>
+        <option value="Kenya">Kenya</option>
+        <option value="USA">USA</option>
+        <option value="India">India</option>
+        <option value="UK">UK</option>
+        <option value="South Africa">South Africa</option>
       </select>
-
-      <select id="typeFilter" onchange="filterAndRender()">
-        <option value="all">All Types</option>
-        <option value="sale">For Sale</option>
-        <option value="lease">For Lease</option>
-        <option value="rental">Short-Term Rental</option>
-      </select>
-
-      <select id="priceSort" onchange="filterAndRender()">
-        <option value="none">Sort by Price</option>
-        <option value="high">Highest → Lowest</option>
-        <option value="low">Lowest → Highest</option>
-      </select>
-
-      <button onclick="locateUser()">📍 View Listings Near Me</button>
     </div>
 
-    <div class="row">
-      <div style="font-weight:600; color:#0b1220;">Amenities (select any):</div>
-      <div class="checkboxes" id="amenityCheckboxes">
-        <label><input type="checkbox" value="piped water" onchange="filterAndRender()"> Piped Water</label>
-        <label><input type="checkbox" value="road access" onchange="filterAndRender()"> Road Access</label>
-        <label><input type="checkbox" value="electrical power" onchange="filterAndRender()"> Electrical Power</label>
-        <label><input type="checkbox" value="soil type" onchange="filterAndRender()"> Soil Type</label>
-        <label><input type="checkbox" value="flood zone" onchange="filterAndRender()"> Flood Zone</label>
-        <label><input type="checkbox" value="verified ownership" onchange="filterAndRender()"> Verified Ownership</label>
-        <label><input type="checkbox" value="leasehold" onchange="filterAndRender()"> Leasehold</label>
-        <label><input type="checkbox" value="freehold" onchange="filterAndRender()"> Freehold</label>
-      </div>
+    <div class="filter-group">
+      <label><b>Category:</b></label>
+      <label><input type="checkbox" class="category" value="Bungalow"> Bungalow</label>
+      <label><input type="checkbox" class="category" value="Apartment"> Apartment</label>
+      <label><input type="checkbox" class="category" value="Studio"> Studio</label>
+      <label><input type="checkbox" class="category" value="Mansionette"> Mansionette</label>
+      <label><input type="checkbox" class="category" value="Land"> Land</label>
+      <label><input type="checkbox" class="category" value="Camping Site"> Camping Site</label>
     </div>
 
-    <div class="row" style="margin-top:8px;">
-      <div style="font-weight:600; color:#0b1220;">Categories (select any):</div>
-      <div class="checkboxes" id="categoryCheckboxes">
-        <label><input type="checkbox" value="land" onchange="filterAndRender()"> Land</label>
-        <label><input type="checkbox" value="bungalow" onchange="filterAndRender()"> Bungalow</label>
-        <label><input type="checkbox" value="apartment" onchange="filterAndRender()"> Apartment</label>
-        <label><input type="checkbox" value="studio" onchange="filterAndRender()"> Studio</label>
-        <label><input type="checkbox" value="mansionette" onchange="filterAndRender()"> Mansionette</label>
-        <label><input type="checkbox" value="camping site" onchange="filterAndRender()"> Camping Site</label>
-      </div>
+    <div class="filter-group">
+      <label><b>Amenities:</b></label>
+      <label><input type="checkbox" class="amenity" value="piped water"> Piped Water</label>
+      <label><input type="checkbox" class="amenity" value="road access"> Road Access</label>
+      <label><input type="checkbox" class="amenity" value="electrical power"> Electrical Power</label>
+      <label><input type="checkbox" class="amenity" value="soil type"> Soil Type</label>
+      <label><input type="checkbox" class="amenity" value="flood zone"> Flood Zone</label>
+      <label><input type="checkbox" class="amenity" value="verified ownership"> Verified Ownership</label>
+      <label><input type="checkbox" class="amenity" value="leasehold"> Leasehold</label>
+      <label><input type="checkbox" class="amenity" value="freehold"> Freehold</label>
     </div>
+
+    <div class="filter-group">
+      <label><b>Sort by:</b></label>
+      <select id="sortSelect">
+        <option value="default">Default</option>
+        <option value="high">Highest Price</option>
+        <option value="low">Lowest Price</option>
+      </select>
+    </div>
+
+    <button id="geoBtn">📍 Find Listings Near Me</button>
   </div>
 
-  <div class="grid" id="grid"></div>
+  <div class="property-grid" id="propertyGrid"></div>
 
-<script>
-/* --------------------------
-   Sample data: 50 listings
-   10 per country: Kenya (KES), USA (USD), India (INR),
-   UK (GBP), South Africa (ZAR)
-   -------------------------- */
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof L === 'undefined') {
+        alert("Leaflet failed to load. Check your internet connection.");
+        return;
+      }
 
-const properties = [
-  // --- KENYA (KES) 10 entries
-  { id: 'KE-1', country:'Kenya', currency:'KES', locale:'en-KE', category:'bungalow', type:'sale', price:120_00000, coords:[-1.286389,36.817223], name:'Nairobi Luxury Bungalow', img:'https://picsum.photos/seed/ke1/800/450', amenities:['piped water','road access','electrical power','verified ownership'], contact:'+254 700 000 001', video:'' },
-  { id: 'KE-2', country:'Kenya', currency:'KES', locale:'en-KE', category:'apartment', type:'sale', price:45_00000, coords:[-1.28333,36.81667], name:'Upper Hill Apartment', img:'https://picsum.photos/seed/ke2/800/450', amenities:['piped water','electrical power','road access'], contact:'+254 700 000 002', video:'' },
-  { id: 'KE-3', country:'Kenya', currency:'KES', locale:'en-KE', category:'studio', type:'rental', price:40_000, coords:[-1.2921,36.8219], name:'CBD Studio Suite', img:'https://picsum.photos/seed/ke3/800/450', amenities:['piped water','road access'], contact:'+254 700 000 003', video:'https://www.youtube.com/embed/ysz5S6PUM-U', parking:'Yes', security:'Yes', pool:'No', sauna:'No' },
-  { id: 'KE-4', country:'Kenya', currency:'KES', locale:'en-KE', category:'land', type:'sale', price:800_000, coords:[-0.1022,34.7540], name:'Kisumu Lake Plot', img:'https://picsum.photos/seed/ke4/800/450', amenities:['verified ownership','soil type','road access'], contact:'+254 700 000 004', video:'' },
-  { id: 'KE-5', country:'Kenya', currency:'KES', locale:'en-KE', category:'mansionette', type:'sale', price:250_00000, coords:[-1.3000,36.8140], name:'Green Acre Mansionette', img:'https://picsum.photos/seed/ke5/800/450', amenities:['electrical power','piped water','verified ownership'], contact:'+254 700 000 005', video:'' },
-  { id: 'KE-6', country:'Kenya', currency:'KES', locale:'en-KE', category:'bungalow', type:'lease', price:90_0000, coords:[-4.0435,39.6682], name:'Diani Beach Bungalow', img:'https://picsum.photos/seed/ke6/800/450', amenities:['piped water','road access','flood zone'], contact:'+254 700 000 006', video:'https://www.youtube.com/embed/dQw4w9WgXcQ', parking:'Yes', security:'Yes', pool:'Yes', sauna:'No' },
-  { id: 'KE-7', country:'Kenya', currency:'KES', locale:'en-KE', category:'camping site', type:'rental', price:6_500, coords:[-2.648,37.253], name:'Amboseli Camping Site', img:'https://picsum.photos/seed/ke7/800/450', amenities:['soil type','road access'], contact:'+254 700 000 007', video:'' , parking:'Yes', security:'Yes', pool:'No', sauna:'No' },
-  { id: 'KE-8', country:'Kenya', currency:'KES', locale:'en-KE', category:'apartment', type:'rental', price:25_000, coords:[-1.2833,36.8167], name:'Riverside Apartments', img:'https://picsum.photos/seed/ke8/800/450', amenities:['piped water','electrical power'], contact:'+254 700 000 008', video:'' , parking:'No', security:'No', pool:'No', sauna:'No' },
-  { id: 'KE-9', country:'Kenya', currency:'KES', locale:'en-KE', category:'land', type:'sale', price:1_200_000, coords:[0.5204,35.2698], name:'Eldoret Family Plot', img:'https://picsum.photos/seed/ke9/800/450', amenities:['verified ownership','road access','freehold'], contact:'+254 700 000 009', video:'' },
-  { id: 'KE-10', country:'Kenya', currency:'KES', locale:'en-KE', category:'studio', type:'sale', price:3_800_00, coords:[-0.3031,36.0800], name:'Nakuru Studio Unit', img:'https://picsum.photos/seed/ke10/800/450', amenities:['electrical power','road access','piped water'], contact:'+254 700 000 010', video:'' },
+      const map = L.map('map').setView([0, 20], 2);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap'
+      }).addTo(map);
 
-  // --- USA (USD) 10 entries
-  { id:'US-1', country:'USA', currency:'USD', locale:'en-US', category:'apartment', type:'sale', price:850000, coords:[40.7128,-74.0060], name:'Manhattan Apartment', img:'https://picsum.photos/seed/us1/800/450', amenities:['electrical power','road access','piped water','verified ownership'], contact:'+1 212 555 0101', video:'' },
-  { id:'US-2', country:'USA', currency:'USD', locale:'en-US', category:'bungalow', type:'sale', price:420000, coords:[34.0522,-118.2437], name:'LA Bungalow', img:'https://picsum.photos/seed/us2/800/450', amenities:['electrical power','road access'], contact:'+1 310 555 0102', video:'' },
-  { id:'US-3', country:'USA', currency:'USD', locale:'en-US', category:'studio', type:'rental', price:2200, coords:[41.8781,-87.6298], name:'Chicago Studio', img:'https://picsum.photos/seed/us3/800/450', amenities:['piped water','electrical power'], contact:'+1 312 555 0103', video:'https://www.youtube.com/embed/eX2qFMC8cFo', parking:'Yes', security:'No', pool:'No', sauna:'No' },
-  { id:'US-4', country:'USA', currency:'USD', locale:'en-US', category:'land', type:'sale', price:250000, coords:[36.1699,-115.1398], name:'Las Vegas Land Parcel', img:'https://picsum.photos/seed/us4/800/450', amenities:['soil type','road access'], contact:'+1 702 555 0104', video:'' },
-  { id:'US-5', country:'USA', currency:'USD', locale:'en-US', category:'mansionette', type:'sale', price:3200000, coords:[37.7749,-122.4194], name:'San Francisco Mansionette', img:'https://picsum.photos/seed/us5/800/450', amenities:['electrical power','verified ownership','road access'], contact:'+1 415 555 0105', video:'' },
-  { id:'US-6', country:'USA', currency:'USD', locale:'en-US', category:'apartment', type:'rental', price:3500, coords:[34.0522,-118.2437], name:'LA Downtown Apt', img:'https://picsum.photos/seed/us6/800/450', amenities:['electrical power','piped water','road access'], contact:'+1 310 555 0106', video:'' , parking:'Yes', security:'Yes', pool:'Yes', sauna:'No' },
-  { id:'US-7', country:'USA', currency:'USD', locale:'en-US', category:'camping site', type:'rental', price:150, coords:[44.0582,-121.3153], name:'Bend Camping Site', img:'https://picsum.photos/seed/us7/800/450', amenities:['soil type','road access'], contact:'+1 541 555 0107', video:'' },
-  { id:'US-8', country:'USA', currency:'USD', locale:'en-US', category:'studio', type:'sale', price:210000, coords:[29.7604,-95.3698], name:'Houston Studio Loft', img:'https://picsum.photos/seed/us8/800/450', amenities:['electrical power','piped water'], contact:'+1 713 555 0108', video:'' },
-  { id:'US-9', country:'USA', currency:'USD', locale:'en-US', category:'bungalow', type:'lease', price:2200, coords:[25.7617,-80.1918], name:'Miami Bungalow Lease', img:'https://picsum.photos/seed/us9/800/450', amenities:['road access','piped water','flood zone'], contact:'+1 305 555 0109', video:'' , parking:'Yes', security:'Yes', pool:'Yes', sauna:'No' },
-  { id:'US-10', country:'USA', currency:'USD', locale:'en-US', category:'apartment', type:'sale', price:600000, coords:[47.6062,-122.3321], name:'Seattle Condo', img:'https://picsum.photos/seed/us10/800/450', amenities:['electrical power','verified ownership'], contact:'+1 206 555 0110', video:'' },
+      const sampleImages = [
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=60",
+        "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=800&q=60",
+        "https://images.unsplash.com/photo-1599423300746-b62533397364?auto=format&fit=crop&w=800&q=60",
+        "https://images.unsplash.com/photo-1523217582562-09d0def993a6?auto=format&fit=crop&w=800&q=60",
+        "https://images.unsplash.com/photo-1598136490942-9b37b9a4b4d3?auto=format&fit=crop&w=800&q=60"
+      ];
 
-  // --- INDIA (INR) 10 entries
-  { id:'IN-1', country:'India', currency:'INR', locale:'en-IN', category:'apartment', type:'sale', price:12000000, coords:[19.0760,72.8777], name:'Mumbai Seafront Apartment', img:'https://picsum.photos/seed/in1/800/450', amenities:['piped water','electrical power','verified ownership'], contact:'+91 98765 00001', video:'' },
-  { id:'IN-2', country:'India', currency:'INR', locale:'en-IN', category:'studio', type:'rental', price:25000, coords:[28.6139,77.2090], name:'Delhi Studio Flat', img:'https://picsum.photos/seed/in2/800/450', amenities:['piped water','road access'], contact:'+91 98765 00002', video:'https://www.youtube.com/embed/ScMzIvxBSi4', parking:'No', security:'No', pool:'No', sauna:'No' },
-  { id:'IN-3', country:'India', currency:'INR', locale:'en-IN', category:'land', type:'sale', price:3500000, coords:[13.0827,80.2707], name:'Chennai Agricultural Plot', img:'https://picsum.photos/seed/in3/800/450', amenities:['soil type','road access'], contact:'+91 98765 00003', video:'' },
-  { id:'IN-4', country:'India', currency:'INR', locale:'en-IN', category:'bungalow', type:'sale', price:8500000, coords:[12.9716,77.5946], name:'Bangalore Garden Bungalow', img:'https://picsum.photos/seed/in4/800/450', amenities:['piped water','electrical power','verified ownership'], contact:'+91 98765 00004', video:'' },
-  { id:'IN-5', country:'India', currency:'INR', locale:'en-IN', category:'mansionette', type:'sale', price:32000000, coords:[28.7041,77.1025], name:'New Delhi Mansionette', img:'https://picsum.photos/seed/in5/800/450', amenities:['verified ownership','electrical power'], contact:'+91 98765 00005', video:'' },
-  { id:'IN-6', country:'India', currency:'INR', locale:'en-IN', category:'apartment', type:'rental', price:40000, coords:[19.2183,72.9781], name:'Thane Rental Apartment', img:'https://picsum.photos/seed/in6/800/450', amenities:['piped water','road access','electrical power'], contact:'+91 98765 00006', video:'' , parking:'Yes', security:'Yes', pool:'Yes', sauna:'No' },
-  { id:'IN-7', country:'India', currency:'INR', locale:'en-IN', category:'studio', type:'sale', price:2800000, coords:[22.5726,88.3639], name:'Kolkata Studio', img:'https://picsum.photos/seed/in7/800/450', amenities:['piped water','road access'], contact:'+91 98765 00007', video:'' },
-  { id:'IN-8', country:'India', currency:'INR', locale:'en-IN', category:'land', type:'sale', price:1250000, coords:[26.9124,75.7873], name:'Jaipur Land Parcel', img:'https://picsum.photos/seed/in8/800/450', amenities:['soil type','verified ownership'], contact:'+91 98765 00008', video:'' },
-  { id:'IN-9', country:'India', currency:'INR', locale:'en-IN', category:'apartment', type:'lease', price:60000, coords:[23.0225,72.5714], name:'Ahmedabad Lease Apartment', img:'https://picsum.photos/seed/in9/800/450', amenities:['electrical power','road access'], contact:'+91 98765 00009', video:'' },
-  { id:'IN-10', country:'India', currency:'INR', locale:'en-IN', category:'camping site', type:'rental', price:1200, coords:[32.2432,76.6339], name:'Himachal Camping Grounds', img:'https://picsum.photos/seed/in10/800/450', amenities:['soil type','road access'], contact:'+91 98765 00010', video:'' },
+      const countries = {
+        "Kenya": { currency: "KES", coords: [-1.286389, 36.817223] },
+        "USA": { currency: "USD", coords: [37.7749, -122.4194] },
+        "India": { currency: "INR", coords: [19.076, 72.8777] },
+        "UK": { currency: "GBP", coords: [51.5074, -0.1278] },
+        "South Africa": { currency: "ZAR", coords: [-26.2041, 28.0473] }
+      };
 
-  // --- UK (GBP) 10 entries
-  { id:'UK-1', country:'UK', currency:'GBP', locale:'en-GB', category:'apartment', type:'sale', price:450000, coords:[51.5074,-0.1278], name:'London Riverside Flat', img:'https://picsum.photos/seed/uk1/800/450', amenities:['piped water','electrical power','verified ownership'], contact:'+44 20 7000 0001', video:'' },
-  { id:'UK-2', country:'UK', currency:'GBP', locale:'en-GB', category:'bungalow', type:'sale', price:300000, coords:[51.4545,-2.5879], name:'Bristol Bungalow', img:'https://picsum.photos/seed/uk2/800/450', amenities:['piped water','road access'], contact:'+44 117 7000 0002', video:'' },
-  { id:'UK-3', country:'UK', currency:'GBP', locale:'en-GB', category:'studio', type:'rental', price:1200, coords:[53.4808,-2.2426], name:'Manchester Studio', img:'https://picsum.photos/seed/uk3/800/450', amenities:['piped water','electrical power'], contact:'+44 161 7000 0003', video:'' , parking:'No', security:'No', pool:'No', sauna:'No' },
-  { id:'UK-4', country:'UK', currency:'GBP', locale:'en-GB', category:'land', type:'sale', price:150000, coords:[52.4862,-1.8904], name:'Birmingham Land Plot', img:'https://picsum.photos/seed/uk4/800/450', amenities:['soil type','road access','verified ownership'], contact:'+44 121 7000 0004', video:'' },
-  { id:'UK-5', country:'UK', currency:'GBP', locale:'en-GB', category:'mansionette', type:'sale', price:1250000, coords:[51.4545,-0.9781], name:'Surrey Mansionette', img:'https://picsum.photos/seed/uk5/800/450', amenities:['verified ownership','electrical power'], contact:'+44 1483 7000 0005', video:'' },
-  { id:'UK-6', country:'UK', currency:'GBP', locale:'en-GB', category:'apartment', type:'rental', price:2200, coords:[55.9533,-3.1883], name:'Edinburgh Rent Flat', img:'https://picsum.photos/seed/uk6/800/450', amenities:['piped water','road access'], contact:'+44 131 7000 0006', video:'' , parking:'Yes', security:'Yes', pool:'No', sauna:'No' },
-  { id:'UK-7', country:'UK', currency:'GBP', locale:'en-GB', category:'studio', type:'sale', price:180000, coords:[51.7520,-1.2577], name:'Oxford Studio', img:'https://picsum.photos/seed/uk7/800/450', amenities:['piped water','road access'], contact:'+44 1865 7000 0007', video:'' },
-  { id:'UK-8', country:'UK', currency:'GBP', locale:'en-GB', category:'camping site', type:'rental', price:90, coords:[50.3763,-4.1431], name:'Cornwall Camping Ground', img:'https://picsum.photos/seed/uk8/800/450', amenities:['soil type','road access'], contact:'+44 1726 7000 0008', video:'' },
-  { id:'UK-9', country:'UK', currency:'GBP', locale:'en-GB', category:'bungalow', type:'lease', price:1500, coords:[53.4084,-2.9916], name:'Liverpool Lease Bungalow', img:'https://picsum.photos/seed/uk9/800/450', amenities:['road access','piped water'], contact:'+44 151 7000 0009', video:'' , parking:'Yes', security:'No', pool:'No', sauna:'No' },
-  { id:'UK-10', country:'UK', currency:'GBP', locale:'en-GB', category:'apartment', type:'sale', price:320000, coords:[51.5079,-0.0877], name:'Docklands Apartment', img:'https://picsum.photos/seed/uk10/800/450', amenities:['electrical power','verified ownership'], contact:'+44 20 7000 0010', video:'' },
+      const categories = ["Bungalow", "Apartment", "Studio", "Mansionette", "Land", "Camping Site"];
 
-  // --- SOUTH AFRICA (ZAR) 10 entries
-  { id:'ZA-1', country:'South Africa', currency:'ZAR', locale:'en-ZA', category:'bungalow', type:'sale', price:2500000, coords:[-26.2041,28.0473], name:'Johannesburg Bungalow', img:'https://picsum.photos/seed/za1/800/450', amenities:['piped water','road access','electrical power'], contact:'+27 11 700 0001', video:'' },
-  { id:'ZA-2', country:'South Africa', currency:'ZAR', locale:'en-ZA', category:'apartment', type:'rental', price:7000, coords:[-33.9249,18.4241], name:'Cape Town Sea Apt', img:'https://picsum.photos/seed/za2/800/450', amenities:['piped water','electrical power','verified ownership'], contact:'+27 21 700 0002', video:'' , parking:'Yes', security:'Yes', pool:'Yes', sauna:'No' },
-  { id:'ZA-3', country:'South Africa', currency:'ZAR', locale:'en-ZA', category:'land', type:'sale', price:500000, coords:[-29.8587,31.0218], name:'Durban Plot', img:'https://picsum.photos/seed/za3/800/450', amenities:['soil type','road access'], contact:'+27 31 700 0003', video:'' },
-  { id:'ZA-4', country:'South Africa', currency:'ZAR', locale:'en-ZA', category:'studio', type:'sale', price:650000, coords:[-25.7479,28.2293], name:'Pretoria Studio', img:'https://picsum.photos/seed/za4/800/450', amenities:['piped water','road access'], contact:'+27 12 700 0004', video:'' },
-  { id:'ZA-5', country:'South Africa', currency:'ZAR', locale:'en-ZA', category:'mansionette', type:'sale', price:8500000, coords:[-26.1952,28.0343], name:'Sandton Mansionette', img:'https://picsum.photos/seed/za5/800/450', amenities:['verified ownership','electrical power'], contact:'+27 11 700 0005', video:'' },
-  { id:'ZA-6', country:'South Africa', currency:'ZAR', locale:'en-ZA', category:'camping site', type:'rental', price:400, coords:[-33.9249,18.4241], name:'Table Bay Camping', img:'https://picsum.photos/seed/za6/800/450', amenities:['soil type','road access'], contact:'+27 21 700 0006', video:'' },
-  { id:'ZA-7', country:'South Africa', currency:'ZAR', locale:'en-ZA', category:'apartment', type:'lease', price:9000, coords:[-29.8579,31.0292], name:'Morningside Lease Apt', img:'https://picsum.photos/seed/za7/800/450', amenities:['electrical power','road access'], contact:'+27 31 700 0007', video:'' , parking:'Yes', security:'Yes', pool:'No', sauna:'No' },
-  { id:'ZA-8', country:'South Africa', currency:'ZAR', locale:'en-ZA', category:'bungalow', type:'lease', price:12000, coords:[-26.2044,28.0456], name:'Rosebank Bungalow Rent', img:'https://picsum.photos/seed/za8/800/450', amenities:['piped water','verified ownership'], contact:'+27 11 700 0008', video:'' },
-  { id:'ZA-9', country:'South Africa', currency:'ZAR', locale:'en-ZA', category:'studio', type:'rental', price:4500, coords:[-30.5595,22.9375], name:'Kimberley Studio', img:'https://picsum.photos/seed/za9/800/450', amenities:['road access','piped water'], contact:'+27 53 700 0009', video:'' },
-  { id:'ZA-10', country:'South Africa', currency:'ZAR', locale:'en-ZA', category:'land', type:'sale', price:800000, coords:[-25.7479,28.2293], name:'Pretoria Farmland', img:'https://picsum.photos/seed/za10/800/450', amenities:['soil type','verified ownership'], contact:'+27 12 700 0010', video:'' },
-];
-
-/* Utility: format price by locale and currency */
-function formatPrice(amount, currency, locale) {
-  try {
-    // some sample datasets use large numbers in e.g. KES; ensure number
-    const num = Number(amount);
-    return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(num);
-  } catch(e){ return amount.toString(); }
-}
-
-/* Initialize Leaflet map AFTER DOM ready */
-document.addEventListener('DOMContentLoaded', () => {
-  const map = L.map('map').setView([0, 20], 2);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap' }).addTo(map);
-
-  const grid = document.getElementById('grid');
-
-  function renderList(list) {
-    grid.innerHTML = '';
-    list.forEach(p => {
-      const el = document.createElement('div');
-      el.className = 'card';
-      // price display: rentals monthly notation
-      const priceLabel = (p.type === 'rental') ? (formatPrice(p.price, p.currency, p.locale) + ' /month') : formatPrice(p.price, p.currency, p.locale);
-      const amenitiesHtml = (p.amenities||[]).map(a => `<span>${a}</span>`).join('');
-      const extraHtml = (p.type === 'rental') ? `
-        <div class="meta">Parking: ${p.parking||'No'} | 24hr Security: ${p.security||'No'}</div>
-        <div class="meta">Pool: ${p.pool||'No'} | Sauna: ${p.sauna||'No'}</div>
-      ` : '';
-      const videoHtml = p.video ? `<iframe src="${p.video}" allowfullscreen loading="lazy"></iframe>` : '';
-      el.innerHTML = `
-        <img src="${p.img}" alt="${p.name}" loading="lazy" />
-        <div class="body">
-          <div class="title"><div>${p.name}</div><div style="margin-left:auto;color:${p.amenities && p.amenities.includes('verified ownership')? '#0b63c6':'#88a' }">✔</div></div>
-          <div class="meta">${p.country} • <i>${p.type.toUpperCase()}</i> • <b>${p.category}</b></div>
-          <div class="price">${priceLabel}</div>
-          <div class="amenities">${amenitiesHtml}</div>
-          ${extraHtml}
-          <div class="contact">Contact: ${p.contact}</div>
-        </div>
-        ${videoHtml}
-      `;
-      // clicking card recenters map and shows polygon marker if available
-      el.addEventListener('click', () => {
-        map.setView(p.coords, 12, { animate:true });
-        L.popup().setLatLng(p.coords).setContent(`<b>${p.name}</b><br>${priceLabel}`).openOn(map);
+      const listings = [];
+      Object.entries(countries).forEach(([country, info]) => {
+        for (let i = 1; i <= 10; i++) {
+          const category = categories[Math.floor(Math.random() * categories.length)];
+          listings.push({
+            name: `${country} ${category} ${i}`,
+            country,
+            category,
+            price: Math.floor(Math.random() * 900000) + 100000,
+            currency: info.currency,
+            coords: [info.coords[0] + (Math.random() - 0.5) * 0.5, info.coords[1] + (Math.random() - 0.5) * 0.5],
+            image: sampleImages[Math.floor(Math.random() * sampleImages.length)],
+            desc: `${category} in ${country} • modern design`,
+            amenities: ["piped water", "road access", "electrical power", "verified ownership"],
+            contact: "+254 712 345678",
+            video: Math.random() > 0.6 ? "https://www.youtube.com/embed/dQw4w9WgXcQ" : null
+          });
+        }
       });
-      grid.appendChild(el);
+
+      const grid = document.getElementById('propertyGrid');
+      const countrySelect = document.getElementById('countrySelect');
+      const sortSelect = document.getElementById('sortSelect');
+      const geoBtn = document.getElementById('geoBtn');
+
+      function renderListings(filtered) {
+        grid.innerHTML = "";
+        map.eachLayer(l => { if (l instanceof L.Marker) map.removeLayer(l); });
+        filtered.forEach(p => {
+          const div = document.createElement('div');
+          div.className = "property-card";
+          div.innerHTML = `
+            <img src="${p.image}" alt="${p.name}">
+            <div class="property-details">
+              <b>${p.name}</b><span class="verified">✔</span><br>
+              ${p.desc}<br>
+              <b>Price:</b> ${p.currency} ${p.price.toLocaleString()}<br>
+              <b>Contact:</b> ${p.contact}
+              ${p.video ? `<iframe src="${p.video}" allowfullscreen></iframe>` : ""}
+            </div>`;
+          div.onclick = () => {
+            map.setView(p.coords, 13);
+            L.marker(p.coords).addTo(map).bindPopup(`<b>${p.name}</b><br>${p.desc}`).openPopup();
+          };
+          grid.appendChild(div);
+        });
+      }
+
+      function applyFilters() {
+        let filtered = [...listings];
+        const selectedCountry = countrySelect.value;
+        const selectedCategories = [...document.querySelectorAll('.category:checked')].map(c => c.value);
+        const selectedAmenities = [...document.querySelectorAll('.amenity:checked')].map(a => a.value);
+        if (selectedCountry !== "all") filtered = filtered.filter(p => p.country === selectedCountry);
+        if (selectedCategories.length) filtered = filtered.filter(p => selectedCategories.includes(p.category));
+        if (selectedAmenities.length) filtered = filtered.filter(p => selectedAmenities.every(a => p.amenities.includes(a)));
+        if (sortSelect.value === "high") filtered.sort((a,b)=>b.price - a.price);
+        if (sortSelect.value === "low") filtered.sort((a,b)=>a.price - b.price);
+        renderListings(filtered);
+      }
+
+      document.querySelectorAll('input, select').forEach(el => el.addEventListener('change', applyFilters));
+      geoBtn.addEventListener('click', () => {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(pos => {
+            const { latitude, longitude } = pos.coords;
+            map.setView([latitude, longitude], 10);
+          });
+        } else alert("Geolocation not supported.");
+      });
+
+      renderListings(listings);
     });
-  }
-
-  /* Filter logic combining country, type, amenities, categories, price sort */
-  function filterAndRender() {
-    const country = document.getElementById('countryFilter').value;
-    const type = document.getElementById('typeFilter').value;
-    const priceSort = document.getElementById('priceSort').value;
-
-    // get amenities checked
-    const amenityChecks = Array.from(document.querySelectorAll('#amenityCheckboxes input[type="checkbox"]:checked')).map(i=>i.value);
-    // get categories checked
-    const categoryChecks = Array.from(document.querySelectorAll('#categoryCheckboxes input[type="checkbox"]:checked')).map(i=>i.value);
-
-    let filtered = properties.filter(p => {
-      if (country !== 'all' && p.country !== country) return false;
-      if (type !== 'all' && p.type !== type) return false;
-      // amenities: all selected amenities must be present
-      if (amenityChecks.length && !amenityChecks.every(a => (p.amenities || []).includes(a))) return false;
-      // categories: if any category filters are selected, property category must be one of them
-      if (categoryChecks.length && !categoryChecks.includes(p.category)) return false;
-      return true;
-    });
-
-    if (priceSort === 'high') filtered.sort((a,b)=>b.price - a.price);
-    if (priceSort === 'low') filtered.sort((a,b)=>a.price - b.price);
-
-    renderList(filtered);
-  }
-
-  // wire filter controls
-  document.getElementById('countryFilter').addEventListener('change', filterAndRender);
-  document.getElementById('typeFilter').addEventListener('change', filterAndRender);
-  document.getElementById('priceSort').addEventListener('change', filterAndRender);
-
-  // amenity and category checkboxes (dynamically referenced)
-  // They are present in the controls markup; reference them by id
-  document.querySelectorAll('#amenityCheckboxes input[type="checkbox"]').forEach(cb => cb.addEventListener('change', filterAndRender));
-  document.querySelectorAll('#categoryCheckboxes input[type="checkbox"]').forEach(cb => cb.addEventListener('change', filterAndRender));
-
-  /* Geolocation: centers map and shows nearby listings (< 100km) */
-  window.locateUser = function locateUser() {
-    if (!navigator.geolocation) { alert('Geolocation not supported'); return; }
-    navigator.geolocation.getCurrentPosition(pos => {
-      const lat = pos.coords.latitude, lon = pos.coords.longitude;
-      map.setView([lat, lon], 10);
-      L.marker([lat, lon]).addTo(map).bindPopup('You are here').openPopup();
-      // compute nearby (<100 km)
-      const nearby = properties.filter(p => distanceKm(lat,lon,p.coords[0],p.coords[1]) < 100);
-      if (nearby.length) renderList(nearby);
-      else alert('No listings found within 100 km of your location.');
-    }, err => { alert('Location permission denied or unavailable.'); });
-  };
-
-  /* Haversine distance */
-  function distanceKm(lat1,lon1,lat2,lon2) {
-    const R=6371;
-    const toRad = d => d * Math.PI / 180;
-    const dLat = toRad(lat2-lat1), dLon = toRad(lon2-lon1);
-    const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
-    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-  }
-
-  // initial render: show all
-  renderList(properties);
-  // expose filter function for inline use
-  window.filterAndRender = filterAndRender;
-});
-</script>
-
+  </script>
 </body>
 </html>

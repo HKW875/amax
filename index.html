@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Global Real Estate Listings</title>
+  <title>International Real Estate Listings</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
     html, body {
@@ -46,7 +46,7 @@
       margin: 3px 0;
       color: #004085;
     }
-    select, button {
+    select, button, input, textarea {
       padding: 6px 10px;
       border: 1px solid #007bff;
       border-radius: 6px;
@@ -55,7 +55,7 @@
       background: #f0f8ff;
       transition: 0.2s;
     }
-    select:hover, button:hover {
+    select:hover, button:hover, input:hover, textarea:hover {
       background: #007bff;
       color: white;
       cursor: pointer;
@@ -110,6 +110,48 @@
       border: none;
       margin-top: 8px;
       border-radius: 8px;
+    }
+    /* Contact Form and WhatsApp Section */
+    .contact-section {
+      background: #ffffffee;
+      width: 90%;
+      margin: 30px auto;
+      padding: 20px;
+      border-radius: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      text-align: center;
+      color: #003366;
+    }
+    .contact-section h3 {
+      color: #0056b3;
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+    .contact-form {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      max-width: 500px;
+      margin: auto;
+      text-align: left;
+    }
+    .contact-form input, .contact-form textarea {
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .whatsapp-btn {
+      display: inline-block;
+      margin-top: 15px;
+      background: #25D366;
+      color: white;
+      font-weight: bold;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: 0.3s;
+    }
+    .whatsapp-btn:hover {
+      background: #1ebe5d;
     }
   </style>
 </head>
@@ -166,6 +208,21 @@
   </div>
 
   <div class="property-grid" id="propertyGrid"></div>
+
+  <!-- Contact Section -->
+  <div class="contact-section">
+    <h3>📩 Contact Us</h3>
+    <form class="contact-form" onsubmit="sendEmail(event)">
+      <label>Name:</label>
+      <input type="text" id="name" required />
+      <label>Email:</label>
+      <input type="email" id="email" required />
+      <label>Message:</label>
+      <textarea id="message" rows="4" required></textarea>
+      <button type="submit">Send Message</button>
+    </form>
+    <a href="https://wa.me/254712345678" target="_blank" class="whatsapp-btn">💬 Chat on WhatsApp</a>
+  </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
@@ -272,6 +329,15 @@
 
       renderListings(listings);
     });
+
+    function sendEmail(event) {
+      event.preventDefault();
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const message = document.getElementById('message').value;
+      const mailtoLink = `mailto:info@globalrealestate.com?subject=Message from ${encodeURIComponent(name)}&body=${encodeURIComponent(message)}%0A%0AFrom: ${encodeURIComponent(email)}`;
+      window.location.href = mailtoLink;
+    }
   </script>
 </body>
 </html>
